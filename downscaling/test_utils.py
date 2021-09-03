@@ -5,7 +5,7 @@ from utils import initialization
 from utils import pop_based_downscaling
 from utils import iamdf_to_dict
 from utils import sequential_algorithm
-from utils import dict_to_iamdf
+from utils import dict_to_df
 
 
 def _create_gen_iamdf(scenario=False):
@@ -169,10 +169,10 @@ def test_sequential_algorithm():
     assert _gen_local == _sol
     
 
-def test_dict_to_iamdf():
+def test_dict_to_df():
     dictionary = {("Scenario A", "Hydrogen", "Austria"): 100}
     column_names = ["Scenario", "Variable", "Region", "Value"]
-    df = dict_to_iamdf(dictionary, column_names)
+    df = dict_to_df(dictionary, column_names)
 
     DF = pd.DataFrame(
         [["Scenario A", "Hydrogen", "Austria", 100],],

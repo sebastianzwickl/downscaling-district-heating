@@ -159,7 +159,9 @@ def test_sequential_algorithm():
     }
     _dict_req = {"Hydrogen": 100, "Direct-electric": 0}
     _dict_pot = {"West Austria": 5, "Middle Austria": 50, "East Austria": 100}
-    _gen_local = sequential_algorithm(_dict_gen, _dict_dem, _dict_req, _dict_pot, "Scenario A")
+    _gen_local = sequential_algorithm(
+        _dict_gen, _dict_dem, _dict_req, _dict_pot, "Scenario A"
+    )
     _sol = {
         ("Scenario A", "Hydrogen", "East Austria"): 80,
         ("Scenario A", "Direct-electric", "East Austria"): 20,
@@ -167,7 +169,7 @@ def test_sequential_algorithm():
         ("Scenario A", "Direct-electric", "West Austria"): 50,
     }
     assert _gen_local == _sol
-    
+
 
 def test_dict_to_df():
     dictionary = {("Scenario A", "Hydrogen", "Austria"): 100}
@@ -175,10 +177,9 @@ def test_dict_to_df():
     df = dict_to_df(dictionary, column_names)
 
     DF = pd.DataFrame(
-        [["Scenario A", "Hydrogen", "Austria", 100],],
-        columns=column_names)
-    assert (DF.equals(df))
-    
-    
-    
-    
+        [
+            ["Scenario A", "Hydrogen", "Austria", 100],
+        ],
+        columns=column_names,
+    )
+    assert DF.equals(df)

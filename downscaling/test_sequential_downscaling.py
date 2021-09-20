@@ -1,6 +1,6 @@
 import pyam
 import pandas as pd
-from downscaling import sequential_downscaling
+from sequential_downscaling import *
 
 
 def _create_gen_iamdf(scenario=False):
@@ -63,20 +63,52 @@ def test_sequential_downscaling():
     local_generation = sequential_downscaling(
         heat_generation, needs, population_density, population
     )
-    
+
     is_df = local_generation.data
-        
+
     _SOL_DF = pd.DataFrame(
         [
-            ["model_a", "scen_a", "Region A", "Biomass", "TWh", 2050, 2*1.875/(1.875+0.75)],
-            ["model_a", "scen_a", "Region A", "Direct-electric", "TWh", 2050, 1.875-2*1.875/(1.875+0.75)],  
-            ["model_a", "scen_a", "Region B", "Biomass", "TWh", 2050, 2*0.75/(1.875+0.75)],
-            ["model_a", "scen_a", "Region B", "Direct-electric", "TWh", 2050, 0.75-2*0.75/(1.875+0.75)],
+            [
+                "model_a",
+                "scen_a",
+                "Region A",
+                "Biomass",
+                "TWh",
+                2050,
+                2 * 1.875 / (1.875 + 0.75),
+            ],
+            [
+                "model_a",
+                "scen_a",
+                "Region A",
+                "Direct-electric",
+                "TWh",
+                2050,
+                1.875 - 2 * 1.875 / (1.875 + 0.75),
+            ],
+            [
+                "model_a",
+                "scen_a",
+                "Region B",
+                "Biomass",
+                "TWh",
+                2050,
+                2 * 0.75 / (1.875 + 0.75),
+            ],
+            [
+                "model_a",
+                "scen_a",
+                "Region B",
+                "Direct-electric",
+                "TWh",
+                2050,
+                0.75 - 2 * 0.75 / (1.875 + 0.75),
+            ],
             ["model_a", "scen_a", "Region B", "Hydrogen", "TWh", 2050, 3.0],
             ["model_a", "scen_a", "Region C", "Direct-electric", "TWh", 2050, 0.375],
         ],
         columns=["model", "scenario", "region", "variable", "unit", "year", "value"],
-        index = range(0, 6)
+        index=range(0, 6),
     )
-    
+
     assert is_df.equals(_SOL_DF) == True

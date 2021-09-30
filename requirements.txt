@@ -3,3 +3,10 @@ numpy
 pandas
 logging
 networkx
+matplotlib
+os
+geopandas
+datetime
+itertools
+pathlib
+

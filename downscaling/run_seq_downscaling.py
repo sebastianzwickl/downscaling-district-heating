@@ -1,20 +1,23 @@
 import pyam as py
+import os
+
+from pathlib import Path
 from sequential_downscaling import *
 from utils import iamdf_to_dict
 from utils import calculate_heat_density
 
-heat = py.IamDataFrame(
-    "Data\GeneSys-Mod_Residential_heat_production_IAMC_format.xlsx"
-).filter(year=2050)
+DATA_FOLDER = Path("data")
 
-population_density = py.IamDataFrame("Data\Population_density.xlsx")
+heat = py.IamDataFrame(DATA_FOLDER / "GeneSys-Mod_Residential_heat_production_IAMC_format.xlsx").filter(year=2050)
 
-_population_area = py.IamDataFrame("Data\Population+Area.xlsx").filter(year=2050)
+population_density = py.IamDataFrame(DATA_FOLDER / "Population_density.xlsx")
+
+_population_area = py.IamDataFrame(DATA_FOLDER / "Population+Area.xlsx").filter(year=2050)
 
 population = _population_area.filter(variable="Population", year=2050)
 area = _population_area.filter(variable="Total area", year=2050)
 
-requirements = iamdf_to_dict(py.IamDataFrame("Data\Requirements.xlsx"), ["variable"])
+requirements = iamdf_to_dict(py.IamDataFrame(DATA_FOLDER / "Requirements.xlsx"), ["variable"])
 
 _scenarios = heat.scenario
 _results = None
@@ -42,15 +45,23 @@ for _sce in _scenarios:
         else:
             _results.rename(variable={_t: "Decentralized|" + _t}, inplace=True)
 
+
+results_directory = os.path.join(
+        "sequential-downscaling-results")
+if not os.path.exists(results_directory):
+    os.makedirs(results_directory)
+
+RESULTS_FOLDER = Path(results_directory)    
+
 _results_to_excel = _results.aggregate(
     variable=["Centralized", "Decentralized"], method="sum", append=False
 )
 _results_to_excel.to_excel(
-    "Sequential-downscaling-results_Centralized+Decentralized_Heat_generation.xlsx",
+    RESULTS_FOLDER / "results_centralized+decentralized_heat_generation.xlsx",
     include_meta=False,
 )
 
 _Heat_density = calculate_heat_density(_results_to_excel, area)
 _Heat_density.to_excel(
-    "Sequential-downscaling-results_Heat_density.xlsx", include_meta=False
+    RESULTS_FOLDER / "results_heat_density.xlsx", include_meta=False
 )

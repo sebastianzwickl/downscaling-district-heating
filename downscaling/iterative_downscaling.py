@@ -6,6 +6,7 @@ import pyam
 
 from datetime import datetime
 from itertools import combinations
+from pathlib import Path
 
 from utils import make_networkx_from_shapefile
 from utils import add_quantities_to_nodes
@@ -141,25 +142,25 @@ def files_to_results_folder(generation=None, lines=None, benchmark=None, folder=
         Includes the name of the result folder. The default is None.
 
     -------
-    results_directiory : String
+    results_directory : String
         Includes the name of the results folder.
 
     """
 
     time = datetime.now().strftime("%Y%m%dT%H%M")
-    results_directiory = os.path.join(
-        "Iterative-downscaling-results", "{}-{}".format(folder, time)
+    results_directory = os.path.join(
+        "iterative-downscaling-results", "{}-{}".format(folder, time)
     )
-    if not os.path.exists(results_directiory):
-        os.makedirs(results_directiory)
+    if not os.path.exists(results_directory):
+        os.makedirs(results_directory)
 
-    lines.to_file(results_directiory + "\connection_lines.shp")
+    lines.to_file(results_directory + "\connection_lines.shp")
     _values = gpd.GeoDataFrame(generation)
-    _values.to_file(results_directiory + "\Centralized_heat_generation.shp")
+    _values.to_file(results_directory + "\centralized_heat_generation.shp")
 
-    benchmark.to_excel(excel_writer=results_directiory + "\Indicator_values.xlsx")
+    benchmark.to_excel(excel_writer=results_directory + "\indicator_values.xlsx")
 
-    return results_directiory
+    return results_directory
 
 
 def plot_final_network_graph(generation=None, lines=None, total_area=None, folder=None):
@@ -205,15 +206,15 @@ def plot_final_network_graph(generation=None, lines=None, total_area=None, folde
         legend=True,
     )
     lines.plot(ax=ax, color="#FBC7F7", linewidth=0.5)
-    fig.savefig(folder + "\Centralized-heat-network.png", dpi=500)
+    fig.savefig(folder + "\centralized-heat-network.png", dpi=500)
 
     return
 
 
 def create_initial_network_topology(
     country="AT",
-    shapefile="Shapefiles\LAU shapefile\LAU_RG_01M_2019_3035.shp",
-    matching="Data\Allocating_LAU_to_NUTS3_1.1.2020.xlsx",
+    shapefile="shapefiles\LAU shapefile\LAU_RG_01M_2019_3035.shp",
+    matching="data\Allocating_LAU_to_NUTS3_1.1.2020.xlsx",
 ):
 
     """
@@ -223,9 +224,9 @@ def create_initial_network_topology(
     country : String, optional
         Country code. The default is "AT".
     shapefile : String, optional
-        Includes the path to the shapefiles on the LAU level. The default is "Shapefiles\LAU shapefile\LAU_RG_01M_2019_3035.shp".
+        Includes the path to the shapefiles on the LAU level. The default is "shapefiles\LAU shapefile\LAU_RG_01M_2019_3035.shp".
     matching : String, optional
-        Includes the file that is used for the allocation of LAU level areas to the NUTS3 level. The default is "Data\Allocating_LAU_to_NUTS3_1.1.2020.xlsx".
+        Includes the file that is used for the allocation of LAU level areas to the NUTS3 level. The default is "data\Allocating_LAU_to_NUTS3_1.1.2020.xlsx".
 
     Returns
     -------
@@ -248,7 +249,7 @@ def create_initial_network_topology(
         _lau_nuts3_at["Zuordnung NUTS 3 zu Gemeinden"] + "|" + _lau_nuts3_at["LAU_NAME"]
     )
 
-    _pop_small_sub_region = pd.read_excel("Data\Population_on_LAU_level_in_2050.xlsx")
+    _pop_small_sub_region = pd.read_excel("data\Population_on_LAU_level_in_2050.xlsx")
     _pop_small_sub_region = _pop_small_sub_region.merge(
         mapping, left_on="region", right_on="Unnamed: 2"
     )
@@ -267,8 +268,9 @@ def create_initial_network_topology(
     _population["Share"] = _population[2050] / _population["Total population"]
     _population.drop(labels=2050, axis=1, inplace=True)
 
+    RESULTS_FOLDER = Path("sequential-downscaling-results")  
     _generation = pd.read_excel(
-        "Sequential-downscaling-results_Centralized+Decentralized_Heat_generation.xlsx"
+        RESULTS_FOLDER / "results_centralized+decentralized_heat_generation.xlsx"
     )
 
     full_data_set = _population.merge(
@@ -286,7 +288,7 @@ def create_initial_network_topology(
     _share = pyam.IamDataFrame(full_data_set)
     # _share.to_excel("lau_share_gen_pop.xlsx", iamc_index=False, include_meta=False)
 
-    _rel_at130 = pyam.IamDataFrame("Data\Population_in_Vienesse_districts.xlsx")
+    _rel_at130 = pyam.IamDataFrame("data\Population_in_Vienesse_districts.xlsx")
     _share.append(_rel_at130, inplace=True)
     _130 = _share.downscale_region(
         variable=["Centralized", "Decentralized"],
@@ -296,7 +298,7 @@ def create_initial_network_topology(
     _share.append(_130, inplace=True)
 
     values = _share.data.merge(_lau_nuts3_at, on="region")
-    nuts3_at130 = gpd.read_file("Shapefiles\Vienesse_districts\ZAEHLBEZIRKOGDPolygon.shp")
+    nuts3_at130 = gpd.read_file("shapefiles\Vienesse_districts\ZAEHLBEZIRKOGDPolygon.shp")
     _130 = nuts3_at130.dissolve(by="BEZNR", aggfunc="sum").reset_index()
     _130["region"] = "AT130|Wien|" + _130["BEZNR"].astype(int).apply(str)
     new_val = _share.data.merge(_130, on="region")

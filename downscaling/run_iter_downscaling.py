@@ -37,4 +37,4 @@ def run_iterative_downscaling(country=None, NUTS3=None, scenario=None):
     return
 
 
-run_iterative_downscaling(country="AT", NUTS3="AT127", scenario="Techno-Friendly")
+run_iterative_downscaling(country="AT", NUTS3="AT312", scenario="Directed Transition")

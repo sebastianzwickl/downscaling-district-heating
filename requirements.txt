@@ -1,0 +1,12 @@
+pyam-iamc  # the pyam package is released on pypi under this name
+numpy
+pandas
+logging
+networkx
+matplotlib
+os
+geopandas
+datetime
+itertools
+pathlib
+

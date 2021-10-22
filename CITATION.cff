@@ -1,0 +1,22 @@
+# YAML 1.2
+---
+authors: 
+  -
+    affiliation: "Technische Universität Wien, Energy Economics Group (EEG)"
+    family-names: "Zwickl-Bernhard"
+    given-names: Sebastian
+    orcid: "https://orcid.org/0000-0002-8599-6278"
+  -
+    affiliation: "International Institute for Applied Systems Analysis (IIASA)"
+    family-names: "Huppmann"
+    given-names: Daniel
+    orcid: "https://orcid.org/0000-0002-7729-7389"
+	
+cff-version: "1.1.0"
+date-released: 2021-10-22
+license: "The MIT License (MIT)"
+message: "If you use this software, please cite it using these metadata."
+repository-code: "https://github.com/sebastianzwickl/sequential-iterative-downscaling"
+title: "Sequential and iterative downscaling algorithms"
+version: "0.1"
+...

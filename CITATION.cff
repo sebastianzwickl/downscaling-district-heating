@@ -11,7 +11,6 @@ authors:
     family-names: "Huppmann"
     given-names: Daniel
     orcid: "https://orcid.org/0000-0002-7729-7389"
-	
 cff-version: "1.1.0"
 date-released: 2021-10-22
 license: "The MIT License (MIT)"
